@@ -1,52 +1,56 @@
 const puppeteer = require('puppeteer');
+const fs = require('fs');
 
 async function scrapePolandJobs() {
-    // 1. Launch a browser
     const browser = await puppeteer.launch({ headless: true });
     const page = await browser.newPage();
 
-    // The URL with the search parameter
     const url = 'https://www.applitrack.com/mahoningesc/onlineapp/default.aspx?AppliTrackPostingSearch=location:%22Poland+Local+School+District+%22';
 
     try {
         console.log("Navigating to AppliTrack...");
         await page.goto(url, { waitUntil: 'networkidle2' });
 
-        // 2. Wait for the postings to actually load into the DOM
-        // We wait for the specific class you identified
+        console.log("Waiting for job postings to load...");
         await page.waitForSelector('.postingsList', { timeout: 10000 });
 
-        // 3. Extract the data from the browser context
         const jobs = await page.evaluate(() => {
             const results = [];
             const items = document.querySelectorAll('.postingsList');
 
             items.forEach(item => {
-                // Double check it's a Poland listing (AppliTrack search can be fuzzy)
+                // Verify this is a Poland listing
                 if (item.textContent.includes("Poland Local School District")) {
                     
-                    // Get the Title from the <td> with id wrapword
-                    const title = item.querySelector('#wrapword')?.textContent?.trim() || "No Title";
+                    // Grab Title: finding the specific cell inside this posting
+                    const titleElement = item.querySelector('td#wrapword');
+                    const title = titleElement ? titleElement.textContent.trim() : "No Title Found";
                     
-                    // Get JobID from the span
+                    // Grab JobID: cleaning up the "JobID: " prefix
                     const jobIdRaw = item.querySelector('.title2')?.textContent?.trim() || "";
-                    const jobId = jobIdRaw.replace('JobID:', '').trim();
+                    const jobId = jobIdRaw.replace(/JobID:\s*/i, '').trim();
 
-                    // Get Position Type
-                    // It's usually the first 'normal' class span after the 'Position Type:' label
-                    const type = item.querySelector('.normal')?.textContent?.trim() || "N/A";
-
-                    results.push({ title, jobId, type });
+                    results.push({ 
+                        title: title, 
+                        jobId: jobId 
+                    });
                 }
             });
             return results;
         });
 
-        console.log(`Success! Found ${jobs.length} postings:`);
+        // --- Save to JSON File ---
+        const outputFilename = 'poland_jobs.json';
+        const jsonData = JSON.stringify(jobs, null, 4); // Indent with 4 spaces for readability
+
+        fs.writeFileSync(outputFilename, jsonData);
+        
+        console.log(`\nSuccess! Found ${jobs.length} postings.`);
+        console.log(`Data has been saved to: ${outputFilename}`);
         console.table(jobs);
 
     } catch (err) {
-        console.error("Error or Timeout: No postings found. The page might be empty or taking too long.");
+        console.error("Error: The script timed out or couldn't find the postings. This usually happens if the search returned no results.");
     } finally {
         await browser.close();
     }

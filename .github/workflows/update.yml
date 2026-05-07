@@ -1,0 +1,46 @@
+name: Update & Deploy Schedule JSONs
+
+on:
+  schedule:
+    - cron: "5 12,15,18,21 * * *"   # 8:05 AM, 11:05 AM, 2:05 PM, 5:05 PM ET
+    - cron: "35 13,16,19 * * *"    
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Generate postings JSONs
+        run: node index.js
+
+      - name: Copy static viewer files
+        run: |
+          mkdir -p dist
+          cp poland_jobs.json dist/
+
+      - name: Commit and push updated JSONs if changed
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git add dist
+          if git diff --cached --quiet; then
+            echo "No changes to commit."
+          else
+            git commit -m "🔄 Auto-update postings JSONs"
+            git push
+          fi
