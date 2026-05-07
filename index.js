@@ -1,56 +1,65 @@
 const puppeteer = require('puppeteer');
 const fs = require('fs');
+const path = require('path');
 
 async function scrapePolandJobs() {
-    const browser = await puppeteer.launch({ headless: true });
+    // Required flags for GitHub Actions/Ubuntu environments
+    const browser = await puppeteer.launch({ 
+        headless: true,
+        args: [
+            '--no-sandbox', 
+            '--disable-setuid-sandbox',
+            '--disable-dev-shm-usage',
+            '--disable-gpu'
+        ]
+    });
+
     const page = await browser.newPage();
+    
+    // Set User Agent to avoid being blocked as a bot
+    await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36');
 
     const url = 'https://www.applitrack.com/mahoningesc/onlineapp/default.aspx?AppliTrackPostingSearch=location:%22Poland+Local+School+District+%22';
 
     try {
         console.log("Navigating to AppliTrack...");
-        await page.goto(url, { waitUntil: 'networkidle2' });
+        await page.goto(url, { waitUntil: 'networkidle2', timeout: 60000 });
 
-        console.log("Waiting for job postings to load...");
-        await page.waitForSelector('.postingsList', { timeout: 10000 });
+        console.log("Waiting for job postings...");
+        await page.waitForSelector('.postingsList', { timeout: 15000 });
 
         const jobs = await page.evaluate(() => {
             const results = [];
             const items = document.querySelectorAll('.postingsList');
 
             items.forEach(item => {
-                // Verify this is a Poland listing
                 if (item.textContent.includes("Poland Local School District")) {
-                    
-                    // Grab Title: finding the specific cell inside this posting
                     const titleElement = item.querySelector('td#wrapword');
                     const title = titleElement ? titleElement.textContent.trim() : "No Title Found";
                     
-                    // Grab JobID: cleaning up the "JobID: " prefix
                     const jobIdRaw = item.querySelector('.title2')?.textContent?.trim() || "";
                     const jobId = jobIdRaw.replace(/JobID:\s*/i, '').trim();
 
-                    results.push({ 
-                        title: title, 
-                        jobId: jobId 
-                    });
+                    results.push({ title, jobId });
                 }
             });
             return results;
         });
 
-        // --- Save to JSON File ---
-        const outputFilename = 'poland_jobs.json';
-        const jsonData = JSON.stringify(jobs, null, 4); // Indent with 4 spaces for readability
+        // Ensure dist directory exists
+        const distPath = path.join(__dirname, 'dist');
+        if (!fs.existsSync(distPath)) {
+            fs.mkdirSync(distPath);
+        }
 
-        fs.writeFileSync(outputFilename, jsonData);
+        const outputFilename = path.join(distPath, 'poland_jobs.json');
+        fs.writeFileSync(outputFilename, JSON.stringify(jobs, null, 4));
         
-        console.log(`\nSuccess! Found ${jobs.length} postings.`);
-        console.log(`Data has been saved to: ${outputFilename}`);
-        console.table(jobs);
+        console.log(`Successfully saved ${jobs.length} jobs to ${outputFilename}`);
 
     } catch (err) {
-        console.error("Error: The script timed out or couldn't find the postings. This usually happens if the search returned no results.");
+        console.error("Scrape failed:", err.message);
+        process.exit(1); // Exit with error for GitHub Actions to catch
     } finally {
         await browser.close();
     }
