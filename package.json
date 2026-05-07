@@ -1,0 +1,17 @@
+{
+  "name": "job-postings",
+  "version": "1.0.0",
+  "description": "",
+  "license": "ISC",
+  "author": "",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "got": "^15.0.3",
+    "jsdom": "^29.1.1",
+    "puppeteer": "^24.42.0"
+  }
+}
