@@ -1,46 +1,57 @@
 [
     {
         "title": "Head Varsity Girls Basketball Coach",
-        "jobId": "7309"
+        "jobId": "7309",
+        "category": "Athletics/Activities/ Coaching"
     },
     {
         "title": "Special Education Classroom Aide",
-        "jobId": "7173"
+        "jobId": "7173",
+        "category": "Classroom Assistant"
     },
     {
         "title": "SUBSTITUTE Special Education Aide",
-        "jobId": "7175"
+        "jobId": "7175",
+        "category": "Classroom Assistant"
     },
     {
         "title": "Pre-School Instructional Assistant",
-        "jobId": "7225"
+        "jobId": "7225",
+        "category": "Classroom Assistant"
     },
     {
         "title": "Teacher - Grade 1 McKinley Elementary",
-        "jobId": "7313"
+        "jobId": "7313",
+        "category": "Elementary School Teaching"
     },
     {
         "title": "Intervention Specialist",
-        "jobId": "7267"
+        "jobId": "7267",
+        "category": "K-12 Teaching/ Intervention Specialist"
     },
     {
         "title": "SS/LA TEACHER - GRADE 4",
-        "jobId": "7268"
+        "jobId": "7268",
+        "category": "Middle School Teaching"
     },
     {
         "title": "Intervention Specialist-Cross Categorical Grades 4-6",
-        "jobId": "7312"
+        "jobId": "7312",
+        "category": "Special Education/ Intervention Specialist"
     },
     {
         "title": "Long Term Substitute Teacher",
-        "jobId": "7291"
+        "jobId": "7291",
+        "category": "Substitute/ Substitute Teacher"
     },
     {
         "title": "Van/Bus Special Education Aide",
-        "jobId": "7172"
+        "jobId": "7172",
+        "category": "Transportation"
     },
     {
         "title": "Bus Driver",
-        "jobId": "6731"
+        "jobId": "6731",
+        "category": "Transportation/ Bus Driver"
     }
 ]
