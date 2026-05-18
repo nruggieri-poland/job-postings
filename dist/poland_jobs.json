@@ -1,5 +1,10 @@
 [
     {
+        "title": "Special Education Classroom Aide",
+        "jobId": "7173",
+        "category": "Classroom Assistant"
+    },
+    {
         "title": "SUBSTITUTE Special Education Aide",
         "jobId": "7175",
         "category": "Classroom Assistant"
@@ -7,11 +12,6 @@
     {
         "title": "Pre-School Instructional Assistant",
         "jobId": "7225",
-        "category": "Classroom Assistant"
-    },
-    {
-        "title": "Special Education Classroom Aide",
-        "jobId": "7173",
         "category": "Classroom Assistant"
     },
     {
