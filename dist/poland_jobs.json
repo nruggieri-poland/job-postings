@@ -10,11 +10,6 @@
         "category": "Classroom Assistant"
     },
     {
-        "title": "Pre-School Instructional Assistant",
-        "jobId": "7225",
-        "category": "Classroom Assistant"
-    },
-    {
         "title": "Teacher - Grade 1 McKinley Elementary",
         "jobId": "7313",
         "category": "Elementary School Teaching"
@@ -27,6 +22,11 @@
     {
         "title": "SS/LA TEACHER - GRADE 4",
         "jobId": "7268",
+        "category": "Middle School Teaching"
+    },
+    {
+        "title": "Teacher - Technology Middle School/Junior High",
+        "jobId": "7348",
         "category": "Middle School Teaching"
     },
     {
