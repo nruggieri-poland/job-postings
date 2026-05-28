@@ -1,10 +1,5 @@
 [
     {
-        "title": "Assistant Varsity Swim Coach",
-        "jobId": "7354",
-        "category": "Athletics/Activities/ Coaching"
-    },
-    {
         "title": "Special Education Classroom Aide",
         "jobId": "7173",
         "category": "Classroom Assistant"
@@ -13,6 +8,11 @@
         "title": "SUBSTITUTE Special Education Aide",
         "jobId": "7175",
         "category": "Classroom Assistant"
+    },
+    {
+        "title": "Jr./Sr. Math Teacher",
+        "jobId": "7363",
+        "category": "High School Teaching/ Mathematics"
     },
     {
         "title": "Intervention Specialist",
