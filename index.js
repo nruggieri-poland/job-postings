@@ -26,6 +26,21 @@ async function scrapePolandJobs() {
         await page.waitForSelector('.postingsList', { timeout: 15000 });
 
         const jobs = await page.evaluate(() => {
+            // The description block is hidden (display:none), so innerText returns "" in
+            // headless Chrome. Walk the HTML manually, turning <br>/<p> into newlines,
+            // since textContent alone would smash adjacent paragraphs together.
+            function extractDescription(container) {
+                if (!container) return "";
+                const clone = container.cloneNode(true);
+                clone.querySelectorAll('br').forEach(br => br.replaceWith('\n'));
+                clone.querySelectorAll('p').forEach(p => p.append('\n'));
+                return clone.textContent
+                    .replace(/ /g, ' ')
+                    .replace(/[ \t]+\n/g, '\n')
+                    .replace(/\n{3,}/g, '\n\n')
+                    .trim();
+            }
+
             const results = [];
             const items = document.querySelectorAll('.postingsList');
 
@@ -34,7 +49,7 @@ async function scrapePolandJobs() {
                     // Get Title
                     const titleElement = item.querySelector('#wrapword');
                     const title = titleElement ? titleElement.textContent.trim() : "No Title Found";
-                    
+
                     // Get JobID
                     const jobIdRaw = item.querySelector('.title2')?.textContent?.trim() || "";
                     const jobId = jobIdRaw.replace(/JobID:\s*/i, '').trim();
@@ -43,7 +58,7 @@ async function scrapePolandJobs() {
                     let category = "Other";
                     const labels = Array.from(item.querySelectorAll('.label'));
                     const posTypeLabel = labels.find(l => l.textContent.includes("Position Type:"));
-                    
+
                     if (posTypeLabel) {
                         // Get all .normal spans within the same parent as the label
                         const normalSpans = posTypeLabel.parentElement.querySelectorAll('.normal');
@@ -53,7 +68,11 @@ async function scrapePolandJobs() {
                             .join(' ');
                     }
 
-                    results.push({ title, jobId, category });
+                    // Get Description (from the hidden "Additional Information: Show/Hide" block)
+                    const descContainer = item.querySelector('[id^="DescriptionText"] .normal');
+                    const description = extractDescription(descContainer);
+
+                    results.push({ title, jobId, category, description });
                 }
             });
             return results;
